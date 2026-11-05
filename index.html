@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
-<head><!--ll-build--><meta name="ll-build" content="2026-11-05c"><script>window.LL_OFFLINE={keineLoesung:true,stand:"2026-11-05"};</script>
+<head><!--ll-build--><meta name="ll-build" content="2026-11-05d"><script>window.LL_OFFLINE={keineLoesung:true,stand:"2026-11-05"};</script>
 <script>(function(){try{var m=document.querySelector('meta[name="ll-build"]');fetch("version.txt",{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(t){var b=(t.match(/^\S+/)||[""])[0];if(b&&b!==m.content&&!sessionStorage.getItem("ll_reload_"+b)){sessionStorage.setItem("ll_reload_"+b,"1");location.reload();}}).catch(function(){});}catch(e){}})();</script><!--/ll-build-->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -6603,7 +6603,7 @@ const meldung = text => frage(text, "OK", null);
 const eingebettet = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
 if (eingebettet) {
   const eb = document.getElementById("embedBar");
-  if (eb) eb.innerHTML = '<div class="banner">Du nutzt die Werkstatt eingebettet (z. B. in Teams). Dein Fortschritt wird in diesem Programm gespeichert. Downloads (.py, Sicherung) sind in Teams manchmal gesperrt, öffne die Werkstatt dann <a href="' + esc(location.href.split("#")[0]) + '" target="_blank" rel="noopener">in einem eigenen Browser-Fenster</a>.</div>';
+  if (eb) eb.innerHTML = '<div class="banner">' + (window.LL_OFFLINE ? 'Du nutzt die Werkstatt eingebettet (z. B. in Teams), ohne Anmeldung und ohne Server. Dein Fortschritt wird nur in diesem Programm gespeichert, lade deshalb ab und zu eine Sicherung herunter.' : 'Du nutzt die Werkstatt eingebettet (z. B. in Teams).') + ' Downloads (.py, Sicherung) sind in Teams manchmal gesperrt, öffne die Werkstatt dann <a href="' + esc(location.href.split("#")[0]) + '" target="_blank" rel="noopener">in einem eigenen Browser-Fenster</a>.</div>';
   try { const sc = document.createElement("script"); sc.src = "https://res.cdn.office.net/teams-js/2.28.0/js/MicrosoftTeams.min.js"; sc.onload = () => { try { window.microsoftTeams.app.initialize().then(() => window.microsoftTeams.app.notifySuccess()).catch(() => {}); } catch (e) {} }; sc.onerror = () => {}; document.head.appendChild(sc); } catch (e) {}
 }
 
@@ -7245,7 +7245,8 @@ function baueExport() {
 }
 async function start() {
   if (lokal) {
-    if (window.LL_OFFLINE) $("banner").innerHTML = '<div class="banner">Offline-Version: Du brauchst keine Anmeldung und keine Internetverbindung. Dein Fortschritt wird nur in diesem Browser gespeichert (Sicherung herunterladen nicht vergessen).</div>';
+    if (window.LL_OFFLINE && eingebettet) $("banner").innerHTML = "";
+    else if (window.LL_OFFLINE) $("banner").innerHTML = '<div class="banner">Offline-Version: Du brauchst keine Anmeldung und keine Internetverbindung. Dein Fortschritt wird nur in diesem Browser gespeichert (Sicherung herunterladen nicht vergessen).</div>';
     else $("banner").innerHTML = '<div class="banner">Lokaler Testmodus: Du bist nicht am Schulserver angemeldet. Dein Fortschritt wird nur in diesem Browser gespeichert, das Sprint-Board wird nicht verändert.</div>';
     ladeLokal(); renderSide(); zeigeInhalt(); return;
   }
