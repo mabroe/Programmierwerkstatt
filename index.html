@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
-<head><!--ll-build--><meta name="ll-build" content="2026-11-05b"><script>window.LL_OFFLINE={keineLoesung:true,stand:"2026-11-05"};</script>
+<head><!--ll-build--><meta name="ll-build" content="2026-11-05c"><script>window.LL_OFFLINE={keineLoesung:true,stand:"2026-11-05"};</script>
 <script>(function(){try{var m=document.querySelector('meta[name="ll-build"]');fetch("version.txt",{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(t){var b=(t.match(/^\S+/)||[""])[0];if(b&&b!==m.content&&!sessionStorage.getItem("ll_reload_"+b)){sessionStorage.setItem("ll_reload_"+b,"1");location.reload();}}).catch(function(){});}catch(e){}})();</script><!--/ll-build-->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -34,7 +34,15 @@
   a:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focus-visible, button:focus-visible, textarea:focus-visible, summary:focus-visible { outline: 3px solid var(--info); outline-offset: 2px; }
 
   .layout { display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 18px; align-items: start; }
-  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .side { max-height: 260px; } }
+  .sidetoggle { display: none; width: 100%; text-align: left; margin-bottom: 10px; }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; gap: 10px; }
+    .side { position: static; max-height: 55vh; }
+    .side.zu { display: none; }
+    .sidetoggle { display: block; }
+    .btns button { flex: 1 1 auto; }
+    .tools { font-size: .8rem; }
+  }
   .side { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 10px; position: sticky; top: 10px; max-height: calc(100vh - 30px); overflow: auto; }
   .side h3 { margin: 10px 6px 4px; font-size: 0.82rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
   .side details { margin: 2px 0; }
@@ -172,6 +180,7 @@
   </div>
   <div id="expBar"></div>
   <div class="layout" id="layout" style="display:none">
+    <button type="button" class="secondary sidetoggle" id="sideToggle" aria-expanded="true" aria-controls="side">☰ Aufgabenliste</button>
     <nav class="side" id="side" aria-label="Aufgaben"></nav>
     <main id="main" tabindex="-1"></main>
   </div>
@@ -6675,6 +6684,15 @@ async function sprintSetNow(taskId, status) {
 const TASKS = window.LL_PROG_AUFGABEN;
 const byId = Object.fromEntries(TASKS.map(t => [t.id, t]));
 let cur = null, mode = "py";
+const schmal = window.matchMedia("(max-width: 900px)");
+function setSide(offen) {
+  $("side").classList.toggle("zu", !offen);
+  const b = $("sideToggle"); b.setAttribute("aria-expanded", String(offen));
+  let n = 0, d = 0; TASKS.forEach(t => { if (lfErlaubt(t.lf)) { n++; const p = PROG[t.id]; if (p && (t.beide ? (p.geloest && p.skGeloest) : (p.geloest || p.skGeloest))) d++; } });
+  b.textContent = (offen ? "▲ Aufgabenliste ausblenden" : "☰ Aufgabenliste einblenden") + " (" + d + " von " + n + " erledigt" + (cur ? ", offen: " + byId[cur].id : "") + ")";
+}
+$("sideToggle").onclick = () => { setSide($("side").classList.contains("zu")); };
+schmal.addEventListener("change", () => setSide(!schmal.matches || !cur));
 function stText(id) { const p = PROG[id], t = byId[id]; const f = t.beide ? (p && p.geloest && p.skGeloest) : (p && (p.geloest || p.skGeloest)); return f ? "erledigt" : p && (p.geloest || p.skGeloest) ? "teilweise gelöst" : p && p.versuche ? "geprüft, noch nicht gelöst" : p && p.code && p.code !== startCode(t) ? "in Arbeit" : "offen"; }
 function stIcon(id) { const p = PROG[id], t = byId[id]; const f = t.beide ? (p && p.geloest && p.skGeloest) : (p && (p.geloest || p.skGeloest)); return f ? "✅" : (p && (p.geloest || p.skGeloest)) ? "🟢" : (p && p.versuche) ? "🟡" : (p && ((p.code && p.code !== startCode(t)) || (p.sk && p.sk.length))) ? "✏️" : "○"; }
 const lfErlaubt = lf => lokal || lehrkraft || !!LF_FREIGABE[lf];
@@ -6697,6 +6715,7 @@ function renderSide() {
   }
   $("side").innerHTML = h;
   $("side").querySelectorAll(".t").forEach(b => b.onclick = () => oeffne(b.dataset.id));
+  setSide(!$("side").classList.contains("zu"));
 }
 
 // ------------------------------------------------------------------ Hilfsfunktionen Python
@@ -6896,7 +6915,7 @@ function oeffne(id) {
   $("bReset").onclick = async () => { if (await frage("Deinen Code und dein Struktogramm für diese Aufgabe wirklich löschen und neu beginnen?", "Ja, neu beginnen")) { ta.value = startCode(t); PROG[id].code = ta.value; SK = []; PROG[id].sk = []; updGutter(); skRender(); merke(); } };
   $("bSkSvg").onclick = () => skDownload("svg"); $("bSkPng").onclick = () => skDownload("png");
   $("bSkClear").onclick = async () => { if (await frage("Das Struktogramm leeren?", "Ja, leeren")) { SK.length = 0; skSave(); skRender(); } };
-  skRender(); setStat(); renderSide(); setMode("py"); window.scrollTo({ top: 0 });
+  skRender(); setStat(); renderSide(); setMode("py"); if (schmal.matches) setSide(false); window.scrollTo({ top: 0 });
   $("taskH").focus({ preventScroll: true });
 }
 function setMode(m) {
