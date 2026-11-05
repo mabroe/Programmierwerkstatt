@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
-<head><!--ll-build--><meta name="ll-build" content="2026-11-05d"><script>window.LL_OFFLINE={keineLoesung:true,stand:"2026-11-05"};</script>
+<head><!--ll-build--><meta name="ll-build" content="2026-11-05e"><script>window.LL_OFFLINE={keineLoesung:true,stand:"2026-11-05"};</script>
 <script>(function(){try{var m=document.querySelector('meta[name="ll-build"]');fetch("version.txt",{cache:"no-store"}).then(function(r){return r.ok?r.text():""}).then(function(t){var b=(t.match(/^\S+/)||[""])[0];if(b&&b!==m.content&&!sessionStorage.getItem("ll_reload_"+b)){sessionStorage.setItem("ll_reload_"+b,"1");location.reload();}}).catch(function(){});}catch(e){}})();</script><!--/ll-build-->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -37,7 +37,7 @@
   .sidetoggle { display: none; width: 100%; text-align: left; margin-bottom: 10px; }
   @media (max-width: 900px) {
     .layout { grid-template-columns: 1fr; gap: 10px; }
-    .side { position: static; max-height: 55vh; }
+    .side { position: static !important; max-height: 55vh !important; }
     .side.zu { display: none; }
     .sidetoggle { display: block; }
     .btns button { flex: 1 1 auto; }
@@ -6693,6 +6693,23 @@ function setSide(offen) {
 }
 $("sideToggle").onclick = () => { setSide($("side").classList.contains("zu")); };
 schmal.addEventListener("change", () => setSide(!schmal.matches || !cur));
+// Schmale Anzeige: Beim Hinunterscrollen klappt die geöffnete Liste von selbst zu, damit sie den Aufgabentext nicht verdeckt.
+let lastY = window.scrollY, scrollWartet = false;
+window.addEventListener("scroll", () => {
+  if (scrollWartet) return; scrollWartet = true;
+  requestAnimationFrame(() => {
+    scrollWartet = false;
+    const y = window.scrollY, runter = y > lastY + 4; lastY = y;
+    const side = $("side");
+    if (!runter || !cur || !schmal.matches || side.classList.contains("zu")) return;
+    const sb = side.getBoundingClientRect();
+    if (sb.top < -20) {   // Liste ist schon teilweise nach oben aus dem Bild gescrollt
+      const m = $("main"), vorher = m.getBoundingClientRect().top;
+      setSide(false);
+      window.scrollBy(0, m.getBoundingClientRect().top - vorher); lastY = window.scrollY;
+    }
+  });
+}, { passive: true });
 function stText(id) { const p = PROG[id], t = byId[id]; const f = t.beide ? (p && p.geloest && p.skGeloest) : (p && (p.geloest || p.skGeloest)); return f ? "erledigt" : p && (p.geloest || p.skGeloest) ? "teilweise gelöst" : p && p.versuche ? "geprüft, noch nicht gelöst" : p && p.code && p.code !== startCode(t) ? "in Arbeit" : "offen"; }
 function stIcon(id) { const p = PROG[id], t = byId[id]; const f = t.beide ? (p && p.geloest && p.skGeloest) : (p && (p.geloest || p.skGeloest)); return f ? "✅" : (p && (p.geloest || p.skGeloest)) ? "🟢" : (p && p.versuche) ? "🟡" : (p && ((p.code && p.code !== startCode(t)) || (p.sk && p.sk.length))) ? "✏️" : "○"; }
 const lfErlaubt = lf => lokal || lehrkraft || !!LF_FREIGABE[lf];
