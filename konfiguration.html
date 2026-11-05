@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Programmierwerkstatt hinzufügen</title>
+<style>body{font-family:Segoe UI,Arial,sans-serif;margin:24px;max-width:560px}h1{font-size:1.2rem}</style>
+<script src="https://res.cdn.office.net/teams-js/2.28.0/js/MicrosoftTeams.min.js"></script></head>
+<body><h1>Programmierwerkstatt</h1>
+<p>Klicke unten auf <b>Speichern</b>, um die Programmierwerkstatt als Tab in diesem Kanal bzw. Chat hinzuzufügen.</p>
+<script>
+microsoftTeams.app.initialize().then(function () {
+  var basis = location.href.replace(/[^\/]*$/, "");
+  microsoftTeams.pages.config.registerOnSaveHandler(function (ev) {
+    microsoftTeams.pages.config.setConfig({
+      entityId: "programmierwerkstatt",
+      contentUrl: basis + "index.html",
+      websiteUrl: basis + "index.html",
+      suggestedDisplayName: "Programmierwerkstatt"
+    }).then(function () { ev.notifySuccess(); }).catch(function () { ev.notifyFailure("Der Tab konnte nicht gespeichert werden."); });
+  });
+  microsoftTeams.pages.config.setValidityState(true);
+  microsoftTeams.app.notifySuccess();
+});
+</script></body></html>

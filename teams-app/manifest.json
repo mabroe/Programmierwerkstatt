@@ -1,0 +1,49 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.17/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.17",
+  "version": "1.0.0",
+  "id": "530761a2-0170-4619-986a-72c30ca373e0",
+  "developer": {
+    "name": "Friedrich-List-Schule Mannheim",
+    "websiteUrl": "https://mabroe.github.io/Programmierwerkstatt/",
+    "privacyUrl": "https://mabroe.github.io/Programmierwerkstatt/datenschutz.html",
+    "termsOfUseUrl": "https://mabroe.github.io/Programmierwerkstatt/datenschutz.html"
+  },
+  "name": {
+    "short": "Programmierwerkstatt",
+    "full": "Programmierwerkstatt LF1 – Arrays"
+  },
+  "description": {
+    "short": "Python üben mit direktem Feedback und Struktogramm-Editor.",
+    "full": "Programmierwerkstatt für den Informatikunterricht (LF1 Arrays): Aufgaben in Python lösen, Ergebnis wird sofort automatisch geprüft, mit Struktogramm-Editor und Schreibtischtest. Der Fortschritt wird nur im eigenen Programm gespeichert, es werden keine Daten an einen Server übertragen."
+  },
+  "icons": {
+    "outline": "outline.png",
+    "color": "color.png"
+  },
+  "accentColor": "#A3202F",
+  "staticTabs": [
+    {
+      "entityId": "programmierwerkstatt",
+      "name": "Programmierwerkstatt",
+      "contentUrl": "https://mabroe.github.io/Programmierwerkstatt/index.html",
+      "websiteUrl": "https://mabroe.github.io/Programmierwerkstatt/index.html",
+      "scopes": [
+        "personal"
+      ]
+    }
+  ],
+  "configurableTabs": [
+    {
+      "configurationUrl": "https://mabroe.github.io/Programmierwerkstatt/konfiguration.html",
+      "canUpdateConfiguration": false,
+      "scopes": [
+        "team",
+        "groupChat"
+      ]
+    }
+  ],
+  "validDomains": [
+    "mabroe.github.io"
+  ]
+}
